@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "702093836547",
+    "project_id": "smart-shoe-fb484",
+    "storage_bucket": "smart-shoe-fb484.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:702093836547:android:7cb5cb3fb92f21fc13a936",
+        "android_client_info": {
+          "package_name": "com.example.smartshoeshop"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCm8tIEKkifrtKxZfC5K3UnhpMGnhoC8j4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
