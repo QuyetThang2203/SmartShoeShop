@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.example.smartshoeshop.database.dao.CartItemDao
 import com.example.smartshoeshop.database.dao.ProductDao
@@ -19,12 +20,13 @@ import com.google.gson.reflect.TypeToken
     version = 1,
     exportSchema = false
 )
-@TypeConverters(ListStringConverter::class)
+@TypeConverters(ListStringConverter::class) // Đăng ký converter để Room biết cách chuyển đổi kiểu dữ liệu phức tạp
 abstract class AppDatabase(): RoomDatabase() {
     abstract fun productDao(): ProductDao
     abstract fun userPreferencesDao(): UserPreferencesDao
     abstract fun cartItemDao(): CartItemDao
 
+    //Companion object dùng để tạo database theo mẫu Singleton (chỉ có 1 instance trong toàn app)
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
@@ -43,18 +45,19 @@ abstract class AppDatabase(): RoomDatabase() {
     }
 }
 
+// Chuyển List<String> <-> String(dạng JSON): Cho phép Room hiểu cách chuyển dữ liệu phức tạp
 class ListStringConverter {
-    private val gson = Gson()
+    private val gson = Gson() // Khởi tạo đối tượng của thư viện để chuyển đổi giữa object và JSON
 
-    @androidx.room.TypeConverter
+    @TypeConverter
     fun fromString(value: String?): List<String>? {
         if(value == null) return null
         val listType = object : TypeToken<List<String>>() {}.type
         return gson.fromJson(value, listType)
     }
 
-    @androidx.room.TypeConverters
-    fun toString(list: List<String>?): String? {
+    @TypeConverter
+    fun listToString(list: List<String>?): String? {
         return gson.toJson(list)
     }
 }

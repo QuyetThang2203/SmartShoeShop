@@ -50,6 +50,7 @@ class FirebaseService {
         auth.signOut()
     }
 
+    //Firestore hoạt động theo mô hình Collection → Document → Field:
     //Firestore - Product
     suspend fun getProducts(): List<Product> {
         return firestore.collection("products").get().await()

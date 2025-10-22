@@ -366,3 +366,84 @@ SmartShoeShop/
   ├── build.gradle.kts                             # Project-level Gradle
   ├── settings.gradle.kts                          # Project settings
   ├── .gitignore                                   # Git ignore rules
+
+
+
+``````````````````````````````````````````````````````````````````
+## Giai Đoạn 2: Thiết Kế Database Và Backend Với Firebase Và Room theo clean architecture
+
+app/
+└─ src/main/java/com/example/smartshoeshop/
+├─ domain/                            # 🧠 Tầng nghiệp vụ (business logic)
+│  ├─ entities/                       # 📦 Các mô hình dữ liệu thuần Kotlin (không phụ thuộc Android)
+│  │  ├─ Product.kt                   # -> Lớp mô tả sản phẩm (id, tên, giá, hình ảnh...)
+│  │  ├─ User.kt                      # -> Lớp mô tả thông tin người dùng
+│  │  ├─ UserPreferences.kt           # -> Lớp lưu cài đặt người dùng (theme, ngôn ngữ...)
+│  │  ├─ CartItem.kt                  # -> Mục trong giỏ hàng (sản phẩm, số lượng, size...)
+│  │  └─ Order.kt                     # -> Đơn hàng (sản phẩm, tổng tiền, trạng thái...)
+│  │
+│  ├─ repositories/                   # 🔌 Các interface định nghĩa cách truy cập dữ liệu
+│  │  ├─ ProductRepository.kt         # -> Định nghĩa hàm lấy sản phẩm, đồng bộ sản phẩm
+│  │  ├─ UserPreferencesRepository.kt # -> Lấy và lưu cấu hình người dùng
+│  │  ├─ CartRepository.kt            # -> Quản lý giỏ hàng
+│  │  ├─ AuthRepository.kt            # -> Đăng nhập / đăng ký / đăng xuất
+│  │  ├─ OrderRepository.kt           # -> Quản lý đơn hàng
+│  │  └─ StorageRepository.kt         # -> Lưu trữ hình ảnh, file (Firebase Storage)
+│  │
+│  └─ usecases/                       # ⚙️ Mỗi UseCase đại diện cho 1 hành vi nghiệp vụ cụ thể
+│     ├─ GetProductsUseCase.kt        # -> Lấy danh sách sản phẩm (từ local)
+│     ├─ FetchProductsUseCase.kt      # -> Tải sản phẩm mới từ Firebase và lưu cache
+│     ├─ GetUserPreferencesUseCase.kt # -> Lấy cấu hình người dùng
+│     └─ SaveUserPreferencesUseCase.kt# -> Lưu cấu hình người dùng vào local
+│
+├─ data/                              # 💾 Tầng dữ liệu (Data Layer)
+│  ├─ local/                          # 🏠 Dữ liệu lưu trữ cục bộ (Room Database)
+│  │  ├─ AppDatabase.kt               # -> Cấu hình Room (chứa các DAO)
+│  │  ├─ LocalDataSource.kt           # -> Lớp trung gian wrap các DAO để repository gọi dễ hơn
+│  │  ├─ dao/                         # -> DAO = Data Access Object (truy vấn DB)
+│  │  │  ├─ ProductDao.kt             # -> CRUD sản phẩm
+│  │  │  ├─ UserPreferencesDao.kt     # -> CRUD cài đặt người dùng
+│  │  │  └─ CartItemDao.kt            # -> CRUD giỏ hàng
+│  │  └─ entities/                    # -> Entity = bảng trong Room
+│  │     ├─ ProductEntity.kt          # -> Bảng sản phẩm
+│  │     ├─ UserPreferencesEntity.kt  # -> Bảng lưu cài đặt người dùng
+│  │     └─ CartItemEntity.kt         # -> Bảng giỏ hàng
+│  │ 
+│  │
+│  ├─ remote/                         # ☁️ Dữ liệu từ server (Firebase / API)
+│  │  ├─ FirebaseRemoteDataSource.kt  # -> Gọi Firestore, Auth, Storage
+│  │  └─ models/                      # -> Model phản ánh dữ liệu từ Firebase
+│  │     ├─ ProductModel.kt           # -> Cấu trúc JSON của sản phẩm trên Firebase
+│  │     ├─ UserModel.kt              # -> Cấu trúc người dùng trên Firebase
+│  │     └─ OrderModel.kt             # -> Cấu trúc đơn hàng trên Firebase
+│  │
+│  ├─ mappers/                        # 🔄 Chuyển đổi giữa Domain <-> Entity <-> Model
+│  │  ├─ ProductMapper.kt             # -> Chuyển đổi ProductModel <-> ProductEntity <-> Product
+│  │  ├─ UserMapper.kt                # -> Chuyển đổi UserModel <-> User
+│  │  ├─ UserPreferencesMapper.kt     # -> Chuyển đổi giữa entity và domain cho preferences
+│  │  ├─ CartItemMapper.kt            # -> Chuyển đổi CartItem giữa domain & entity
+│  │  └─ OrderMapper.kt               # -> Chuyển đổi OrderModel <-> OrderEntity <-> Order
+│  │
+│  ├─ repositories/                   # 🧩 Triển khai cụ thể các repository interface trong domain
+│  │  ├─ ProductRepositoryImpl.kt     # -> Dùng Local + Remote để lấy dữ liệu sản phẩm
+│  │  ├─ UserPreferencesRepositoryImpl.kt # -> Triển khai lưu/lấy cài đặt người dùng
+│  │  ├─ CartRepositoryImpl.kt        # -> Triển khai thao tác giỏ hàng
+│  │  ├─ AuthRepositoryImpl.kt        # -> Triển khai đăng nhập/đăng ký Firebase
+│  │  ├─ OrderRepositoryImpl.kt       # -> Triển khai xử lý đơn hàng
+│  │  └─ StorageRepositoryImpl.kt     # -> Triển khai upload hình ảnh lên Firebase Storage
+│
+└─ (presentation/ui/di/utils)         # 🎨 Tầng hiển thị (ViewModel, UI, DI) — chưa hiển thị ở đây
+                                      # -> ViewModel gọi UseCase
+                                      # -> UI (Compose/Activity) observe StateFlow từ ViewModel
+                                      # -> DI (Hilt/Koin) inject repository & usecase
+
+``````
+DAO thực thi SQL (do Room tạo code).
+
+LocalDataSource gọi DAO.
+
+RepositoryImpl gọi LocalDataSource (và có thể gọi cả Firebase).
+
+Domain (UseCase) gọi Repository.
+
+UI (ViewModel) gọi UseCase.
