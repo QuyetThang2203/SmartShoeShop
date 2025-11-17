@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class UserPreferencesEntity(
     @PrimaryKey
     val userId: String,
-    val favoriteSizes: String, // as JSON
-    val favoriteCategories: String, // as JSON
-    val favoriteBrands: String, // as JSON
+    val favoriteSizes: String, // Serialized List<String> as JSON
+    val favoriteCategories: String, // Serialized List<String> as JSON
+    val favoriteBrands: String, // Serialized List<String> as JSON
 )

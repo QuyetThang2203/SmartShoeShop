@@ -1,3 +1,4 @@
+// Path: app/src/main/java/com/example/smartshoeshop/data/mappers/UserMapper.kt
 package com.example.smartshoeshop.data.mappers
 
 import com.example.smartshoeshop.data.remote.models.UserModel

@@ -1,7 +1,5 @@
 package com.example.smartshoeshop.data.remote.models
 
-// Firebase cần khởi tạo model rỗng để có thể tự động đọc dữ liệu vào đối tượng Kotlin mà không bị
-// lỗi khi thiếu field hoặc chưa có dữ liệu
 data class ProductModel(
     val id: String = "",
     val name: String = "",

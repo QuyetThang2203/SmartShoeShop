@@ -7,6 +7,6 @@ data class UserModel(
     val preferences: Map<String, List<String>> = mapOf(
         "favorite_sizes" to emptyList(),
         "favorite_categories" to emptyList(),
-        "favorite_brands" to emptyList()
+        "favorite_brands" to emptyList(),
     )
 )

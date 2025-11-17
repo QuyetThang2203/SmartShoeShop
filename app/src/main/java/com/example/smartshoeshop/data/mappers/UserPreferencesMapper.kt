@@ -2,27 +2,35 @@ package com.example.smartshoeshop.data.mappers
 
 import com.example.smartshoeshop.data.local.entities.UserPreferencesEntity
 import com.example.smartshoeshop.domain.entities.UserPreferences
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import kotlin.String
 
 class UserPreferencesMapper {
-    private val gson = Gson()
+    private val moshi: Moshi = Moshi.Builder()
+        .add(KotlinJsonAdapterFactory())
+        .build()
 
-    fun toDomain(entity: UserPreferencesEntity): UserPreferences {
-        return UserPreferences(
+    private val listStringAdapter = moshi.adapter<List<String>>(
+        Types.newParameterizedType(List::class.java, String::class.java)
+    )
+
+    fun toMain(entity: UserPreferencesEntity): UserPreferences {
+        return UserPreferences (
             userId = entity.userId,
-            favoriteSizes = gson.fromJson(entity.favoriteSizes, object : TypeToken<List<String>>() {}.type) ?: emptyList(),
-            favoriteCategories = gson.fromJson(entity.favoriteCategories, object : TypeToken<List<String>>() {}.type) ?: emptyList(),
-            favoriteBrands = gson.fromJson(entity.favoriteBrands, object : TypeToken<List<String>>() {}.type) ?: emptyList()
+            favoriteSizes = listStringAdapter.fromJson(entity.favoriteSizes) ?: emptyList(),
+            favoriteCategories = listStringAdapter.fromJson(entity.favoriteCategories) ?: emptyList(),
+            favoriteBrands =listStringAdapter.fromJson(entity.favoriteBrands) ?: emptyList()
         )
     }
 
     fun toEntity(domain: UserPreferences): UserPreferencesEntity {
-        return UserPreferencesEntity(
+        return UserPreferencesEntity (
             userId = domain.userId,
-            favoriteSizes = gson.toJson(domain.favoriteSizes),
-            favoriteCategories = gson.toJson(domain.favoriteCategories),
-            favoriteBrands = gson.toJson(domain.favoriteBrands)
+            favoriteSizes = listStringAdapter.toJson(domain.favoriteSizes),
+            favoriteCategories = listStringAdapter.toJson(domain.favoriteCategories),
+            favoriteBrands =listStringAdapter.toJson(domain.favoriteBrands)
         )
     }
 }

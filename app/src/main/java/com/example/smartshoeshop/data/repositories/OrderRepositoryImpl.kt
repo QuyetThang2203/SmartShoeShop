@@ -9,13 +9,12 @@ import javax.inject.Inject
 class OrderRepositoryImpl @Inject constructor(
     private val remoteDataSource: FirebaseRemoteDataSource,
     private val mapper: OrderMapper
-): OrderRepository {
+): OrderRepository{
     override suspend fun addOrder(order: Order): Boolean {
         return remoteDataSource.addOrder(mapper.toModel(order))
     }
 
     override suspend fun getOrdersForUser(userId: String): List<Order> {
-        return remoteDataSource.getOrdersForUser(userId).map { mapper.toDomain(it) }
+        return remoteDataSource.getOrderForUser(userId).map { mapper.toDomain(it)}
     }
-
 }

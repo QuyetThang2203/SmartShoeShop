@@ -2,7 +2,7 @@ package com.example.smartshoeshop.domain.entities
 
 import java.util.Date
 
-data class Order(
+data class Order (
     val id: String,
     val userId: String,
     val products: List<OrderProduct>,
@@ -11,7 +11,7 @@ data class Order(
     val createdAt: Date?
 )
 
-data class OrderProduct(
+data class OrderProduct (
     val productId: String,
     val quantity: Int,
     val size: String

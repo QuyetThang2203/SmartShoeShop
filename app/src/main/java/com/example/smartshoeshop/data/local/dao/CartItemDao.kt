@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CartItemDao {
+
     @Query("SELECT * FROM cart_items WHERE userId = :userId")
     fun getCartItemsForUser(userId: String): Flow<List<CartItemEntity>>
 
@@ -19,7 +20,7 @@ interface CartItemDao {
     suspend fun insertCartItem(cartItem: CartItemEntity)
 
     @Query("DELETE FROM cart_items WHERE id = :id")
-    suspend fun deleteCartItemById(id: String)
+    suspend fun deleteCartItem(id: String)
 
     @Query("DELETE FROM cart_items WHERE userId = :userId")
     suspend fun deleteAllCartItemsForUser(userId: String)

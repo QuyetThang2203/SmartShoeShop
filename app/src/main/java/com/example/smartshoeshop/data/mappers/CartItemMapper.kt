@@ -1,3 +1,4 @@
+// Path: app/src/main/java/com/example/smartshoeshop/data/mappers/CartItemMapper.kt
 package com.example.smartshoeshop.data.mappers
 
 import com.example.smartshoeshop.data.local.entities.CartItemEntity

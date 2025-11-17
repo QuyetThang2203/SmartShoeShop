@@ -14,8 +14,7 @@ import androidx.room.PrimaryKey
     )]
 )
 data class CartItemEntity(
-    @PrimaryKey
-    val id: String,
+    @PrimaryKey val id: String,
     val userId: String,
     val productId: String,
     val quantity: Int,

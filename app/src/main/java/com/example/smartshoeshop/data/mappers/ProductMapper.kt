@@ -3,46 +3,62 @@ package com.example.smartshoeshop.data.mappers
 import com.example.smartshoeshop.data.local.entities.ProductEntity
 import com.example.smartshoeshop.data.remote.models.ProductModel
 import com.example.smartshoeshop.domain.entities.Product
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlin.String
 
 class ProductMapper {
-    private val gson = Gson() // Thư viện chuyển đổi dữ liệu giữa JSON <-> Object
 
-    // Chuyển dữ liệu Product từ tầng local(Room) sang tầng domain
+    // Tạo một đối tượng Moshi – dùng để chuyển đổi (parse) JSON
+    private  val moshi: Moshi = Moshi.Builder()
+        .add(KotlinJsonAdapterFactory()) // Giúp Moshi hiểu data class Kotlin
+        .build()
+
+    // Adapter = công cụ chuyên dụng mà Moshi tạo ra để chuyển đổi một kiểu dữ liệu cụ thể.
+    // Ở đây adapter này dùng để:
+    //  - JSON  → List<String>
+    //  - List<String> → JSON
+    // nó giúp hai thứ vốn không hiểu nhau có thể chuyển đổi qua lại.
+    private val listStringAdapter = moshi.adapter<List<String>>(
+        Types.newParameterizedType(
+            List::class.java,           // Kiểu dữ liệu bên ngoài: List
+            String::class.java)  // Kiểu dữ liệu bên trong List: String
+    )
+
+    // product local -> product domain
     fun toDomain(entity: ProductEntity): Product {
-        return Product(
+        return Product (
             id = entity.id,
             name = entity.name,
             price = entity.price,
             description = entity.description,
             imageUrl = entity.imageUrl,
-            sizeOptions = gson.fromJson(entity.sizeOptions, object : TypeToken<List<String>>() {}.type) ?: emptyList(),
+            sizeOptions = listStringAdapter.fromJson(entity.sizeOptions) ?: emptyList(), // đọc từ Room thành List
             category = entity.category,
             stock = entity.stock,
-            tags = gson.fromJson(entity.tags, object : TypeToken<List<String>>() {}.type) ?: emptyList()
+            tags = listStringAdapter.fromJson(entity.tags) ?: emptyList() // đọc từ Room thành List
         )
     }
 
-    // Chuyển dữ liệu product từ tầng domain sang tầng local(room)
-    fun toEntity(domain: Product): ProductEntity {
-        return ProductEntity(
-            id = domain.id,
-            name = domain.name,
-            price = domain.price,
-            description = domain.description,
-            imageUrl = domain.imageUrl,
-            sizeOptions = gson.toJson(domain.sizeOptions),
-            category = domain.category,
-            stock = domain.stock,
-            tags = gson.toJson(domain.tags)
+    // product domain -> product local
+    fun toEntity(product: Product): ProductEntity {
+        return ProductEntity (
+            id = product.id,
+            name = product.name,
+            price = product.price,
+            description = product.description,
+            imageUrl = product.imageUrl,
+            sizeOptions = listStringAdapter.toJson(product.sizeOptions), // lưu vào Room
+            category = product.category,
+            stock = product.stock,
+            tags  = listStringAdapter.toJson(product.tags) // lưu vào Room
         )
     }
 
-    // Chuyển dữ liệu product từ tầng remote(firebase) sang tầng domain
-    fun toDomain(model: ProductModel): Product {
-        return Product (
+    // product remote -> product domain
+    fun toDomain(model: ProductModel): Product{
+        return Product(
             id = model.id,
             name = model.name,
             price = model.price,
@@ -55,18 +71,19 @@ class ProductMapper {
         )
     }
 
-    // Chuyển dữ liệu product từ tầng domain sang tầng remote(firebase)
-    fun toModel(domain: Product): ProductModel {
+    // product domain -> product remote
+    fun toModel(product: Product): ProductModel {
         return ProductModel(
-            id = domain.id,
-            name = domain.name,
-            price = domain.price,
-            description = domain.description,
-            image_url = domain.imageUrl,
-            size_options = domain.sizeOptions,
-            category = domain.category,
-            stock = domain.stock,
-            tags = domain.tags
+            id = product.id,
+            name = product.name,
+            price = product.price,
+            description = product.description,
+            image_url = product.imageUrl,
+            size_options = product.sizeOptions,
+            category = product.category,
+            stock = product.stock,
+            tags = product.tags
         )
     }
+
 }

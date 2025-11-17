@@ -13,16 +13,15 @@ class CartRepositoryImpl @Inject constructor(
     private val mapper: CartItemMapper
 ): CartRepository {
     override fun getCartItemsForUser(userId: String): Flow<List<CartItem>> {
-        return localDataSource.getCartItemsForUser(userId)
-            .map { entities ->                            // map 1: biến đổi List trong Flow
-                entities.map{mapper.toDomain(it)} // map 2: biến đổi từng phần tử trong List
-            }
+        return localDataSource.getCartItemsForUser(userId).map { entities ->
+            entities.map { mapper.toDomain(it)}
+        }
     }
 
-    override suspend fun getCartItemsById(id: String): CartItem? {
-        return localDataSource.getCartItemById(id)?.let{ entity ->
-                mapper.toDomain(entity)
-            }
+    override suspend fun getCartItemById(id: String): CartItem? {
+        return localDataSource.getCartItemById(id)?.let {
+            mapper.toDomain(it)
+        }
     }
 
     override suspend fun addCartItem(cartItem: CartItem) {
@@ -30,11 +29,10 @@ class CartRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteCartItem(id: String) {
-        localDataSource.deleteCartItemById(id)
+        localDataSource.deleteCartItem(id)
     }
 
     override suspend fun deleteAllCartItemsForUser(userId: String) {
         localDataSource.deleteAllCartItemsForUser(userId)
     }
-
 }

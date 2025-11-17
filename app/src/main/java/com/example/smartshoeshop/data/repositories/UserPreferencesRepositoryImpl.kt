@@ -13,7 +13,7 @@ class UserPreferencesRepositoryImpl @Inject constructor(
     private val mapper: UserPreferencesMapper
 ): UserPreferencesRepository {
     override fun getUserPreferences(userId: String): Flow<UserPreferences?> {
-        return localDataSource.getUserPreferences(userId).map { it?.let{mapper.toDomain(it)} }
+        return localDataSource.getUserPreferences(userId).map { it?.let {mapper.toMain(it)}}
     }
 
     override suspend fun saveUserPreferences(preferences: UserPreferences) {
@@ -23,4 +23,5 @@ class UserPreferencesRepositoryImpl @Inject constructor(
     override suspend fun deleteUserPreferences(userId: String) {
         localDataSource.deleteUserPreferences(userId)
     }
+
 }

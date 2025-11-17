@@ -11,8 +11,8 @@ data class ProductEntity(
     val price: Double,
     val description: String,
     val imageUrl: String,
-    val sizeOptions: String, // as JSON: list<sizeOption> -> String
+    val sizeOptions: String, // Lưu dưới dạng JSON - Phải parse JSON thành List<String> để dùng
     val category: String,
     val stock: Int,
-    val tags: String, // as JSON: list<tags> -> String
+    val tags: String // Lưu dưới dạng JSON- Phải parse JSON thành List<String> để dùng
 )

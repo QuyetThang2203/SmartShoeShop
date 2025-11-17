@@ -1,16 +1,14 @@
 package com.example.smartshoeshop.data.local.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.smartshoeshop.data.local.entities.ProductEntity
+import com.example.smartshoeshop.domain.entities.Product
 import kotlinx.coroutines.flow.Flow
 
-/*
-* FLow = luồng dữ liệu sống, lắng nghe liên tục trong database
-* suspend = chỉ thực hiện 1 lần, chờ kết quả trả về (dạng đồng bộ bất đồng bộ)
- */
 @Dao
 interface ProductDao {
     @Query("SELECT * FROM products")
@@ -28,15 +26,4 @@ interface ProductDao {
     @Query("DELETE FROM products")
     suspend fun deleteAllProducts()
 }
-
-
-
-
-
-
-
-
-
-
-
 

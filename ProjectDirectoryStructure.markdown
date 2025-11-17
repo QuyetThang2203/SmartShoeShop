@@ -447,3 +447,168 @@ RepositoryImpl gọi LocalDataSource (và có thể gọi cả Firebase).
 Domain (UseCase) gọi Repository.
 
 UI (ViewModel) gọi UseCase.
+
+
+``````````````````````````````````````````````````````````````````
+
+
+
+``````````````````````````````````````````````````````````````````
+app/src/main/java/com/example/smartshoeshop/
+     ├─ domain/                                  // 🧠 Tầng nghiệp vụ (logic thuần, không phụ thuộc Android)
+     │  ├─ entities/                             // 🧩 Các data class mô tả đối tượng trong app (Product, User,...)
+     │  │  ├─ Product.kt
+     │  │  ├─ UserPreferences.kt
+     │  │  ├─ CartItem.kt
+     │  │  ├─ User.kt
+     │  │  └─ Order.kt                          // chứa cả OrderProduct data class (sản phẩm trong đơn hàng)
+     │  │
+     │  ├─ repositories/                         // 🔌 Interface định nghĩa hành vi mà tầng Data phải thực hiện (port)
+     │  │  ├─ ProductRepository.kt
+     │  │  ├─ UserPreferencesRepository.kt
+     │  │  ├─ CartRepository.kt
+     │  │  ├─ AuthRepository.kt
+     │  │  ├─ OrderRepository.kt
+     │  │  └─ StorageRepository.kt
+     │  │
+     │  ├─ usecases/                             // ⚙️ Các trường hợp sử dụng (1 hành động nghiệp vụ)
+     │  │  ├─ product/
+     │  │  │  ├─ GetProductsUseCase.kt           // Lấy danh sách sản phẩm
+     │  │  │  ├─ FetchProductsUseCase.kt         // Gọi API để cập nhật dữ liệu
+     │  │  │  └─ GetProductByIdUseCase.kt
+     │  │  ├─ preferences/
+     │  │  │  ├─ GetUserPreferencesUseCase.kt
+     │  │  │  └─ SaveUserPreferencesUseCase.kt
+     │  │  ├─ cart/
+     │  │  │  ├─ GetCartItemsUseCase.kt
+     │  │  │  ├─ AddCartItemUseCase.kt
+     │  │  │  └─ DeleteCartItemUseCase.kt
+     │  │  ├─ auth/
+     │  │  │  ├─ LoginWithEmailUseCase.kt
+     │  │  │  └─ LoginWithGoogleUseCase.kt
+     │  │  └─ order/
+     │  │     ├─ AddOrderUseCase.kt
+     │  │     └─ GetOrdersForUserUseCase.kt
+     │  │
+     │  └─ di/
+     │     └─ DomainModule.kt                    // 🔧 Cung cấp use case (nếu cần inject riêng ở tầng domain)
+     │
+     ├─ data/                                   // 💾 Tầng dữ liệu (Data layer) - nơi xử lý thật với DB & Firebase
+     │  ├─ local/                               // 📦 Dữ liệu lưu trữ cục bộ (Room)
+     │  │  ├─ AppDatabase.kt                    // Khởi tạo Room Database
+     │  │  ├─ LocalDataSource.kt                // Lớp trung gian gọi đến DAO
+     │  │  ├─ dao/
+     │  │  │  ├─ ProductDao.kt
+     │  │  │  ├─ UserPreferencesDao.kt
+     │  │  │  └─ CartItemDao.kt
+     │  │  └─ entities/                         // Entity mapping cho Room
+     │  │     ├─ ProductEntity.kt
+     │  │     ├─ UserPreferencesEntity.kt
+     │  │     └─ CartItemEntity.kt
+     │  │
+     │  ├─ remote/                              // 🌐 Dữ liệu từ Firebase / API
+     │  │  ├─ FirebaseRemoteDataSource.kt        // Lấy dữ liệu từ Firestore
+     │  │  ├─ FirebaseAuthDataSource.kt          // Xử lý đăng nhập Firebase Auth
+     │  │  └─ models/
+     │  │     ├─ ProductModel.kt
+     │  │     ├─ UserModel.kt
+     │  │     └─ OrderModel.kt
+     │  │
+     │  ├─ mappers/                             // 🔄 Chuyển đổi giữa Entity <-> Domain <-> Model
+     │  │  ├─ ProductMapper.kt
+     │  │  ├─ UserPreferencesMapper.kt
+     │  │  ├─ CartItemMapper.kt
+     │  │  ├─ UserMapper.kt
+     │  │  └─ OrderMapper.kt
+     │  │
+     │  ├─ repositories/                         // 🧩 Implement các interface trong domain.repositories
+     │  │  ├─ ProductRepositoryImpl.kt
+     │  │  ├─ UserPreferencesRepositoryImpl.kt
+     │  │  ├─ CartRepositoryImpl.kt
+     │  │  ├─ AuthRepositoryImpl.kt
+     │  │  ├─ OrderRepositoryImpl.kt
+     │  │  └─ StorageRepositoryImpl.kt
+     │  │
+     │  └─ di/
+     │     ├─ DatabaseModule.kt                  // @Provides Room, DAO (Singleton)
+     │     ├─ RemoteModule.kt                    // @Provides Firebase instance
+     │     └─ RepositoryModule.kt                // @Binds Impl -> Interface (Singleton)
+     │
+     ├─ datastore/                               // ⚙️ DataStore để lưu thông tin user cục bộ (lightweight)
+     │  ├─ preferences/
+     │  │  ├─ UserPreferencesStore.kt            // Lớp quản lý DataStore
+     │  │  └─ DataStoreKeys.kt                   // Khai báo các key lưu trữ
+     │  ├─ proto/
+     │  │  ├─ UserPreferencesProto.kt            // Nếu dùng ProtoDataStore
+     │  │  └─ UserPreferencesProtoSerializer.kt
+     │  └─ di/
+     │     └─ DatastoreModule.kt                 // @Provides DataStore instance
+     │
+     └─ presentation/                            // 🎨 Tầng giao diện (MVVM + UI logic)
+        ├─ base/                                 // 🧱 Base class dùng chung
+        │  ├─ BaseFragment.kt
+        │  ├─ BaseActivity.kt
+        │  ├─ BaseViewModel.kt
+        │  └─ BaseAdapter.kt
+        │
+        ├─ navigation/                           // 🚀 Điều hướng (Navigation Component)
+        │  ├─ AppNavigator.kt                    // Interface trừu tượng
+        │  ├─ NavControllerAppNavigator.kt       // Cài đặt cụ thể bằng NavController
+        │  └─ NavExtensions.kt                   // Tiện ích mở rộng (extensions)
+        │
+        ├─ screen/                               // 🖼️ Mỗi màn hình theo module
+        │  ├─ product/
+        │  │  ├─ ProductListFragment.kt
+        │  │  ├─ ProductDetailFragment.kt
+        │  │  └─ adapters/
+        │  │     └─ ProductAdapter.kt
+        │  │
+        │  ├─ cart/
+        │  │  └─ CartFragment.kt
+        │  │
+        │  ├─ auth/
+        │  │  ├─ LoginFragment.kt
+        │  │  └─ RegisterFragment.kt
+        │  │
+        │  ├─ order/
+        │  │  └─ OrdersFragment.kt
+        │  │
+        │  └─ settings/
+        │     └─ PreferencesFragment.kt
+        │
+        ├─ state/                                // 📊 UI State (immutable state pattern)
+        │  ├─ product/
+        │  │  ├─ ProductListState.kt
+        │  │  └─ ProductDetailState.kt
+        │  ├─ cart/
+        │  │  └─ CartState.kt
+        │  ├─ auth/
+        │  │  └─ AuthState.kt
+        │  └─ order/
+        │     └─ OrdersState.kt
+        │
+        ├─ viewmodel/                            // 🧠 ViewModel (Hilt inject UseCase)
+        │  ├─ product/
+        │  │  ├─ ProductListViewModel.kt
+        │  │  └─ ProductDetailViewModel.kt
+        │  ├─ cart/
+        │  │  └─ CartViewModel.kt
+        │  ├─ auth/
+        │  │  └─ AuthViewModel.kt
+        │  ├─ order/
+        │  │  └─ OrdersViewModel.kt
+        │  └─ settings/
+        │     └─ PreferencesViewModel.kt
+        │
+        ├─ util/                                 // 🧰 Tiện ích UI (extension, binding,...)
+        │  ├─ Extensions.kt
+        │  ├─ BindingAdapters.kt
+        │  └─ ViewUtils.kt
+        │
+        └─ di/                                   // ⚙️ Dependency Injection cho presentation layer
+           ├─ PresentationModule.kt              // @Binds cho ActivityComponent
+           └─ ViewModelModule.kt                 // @Provides cho ViewModelComponent
+``````````````````````````````````````````````````````````````````
+
+
+
