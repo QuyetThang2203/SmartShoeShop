@@ -1,4 +1,4 @@
-package com.example.smartshoeshop
+package com.example.smartshoeshop.presentation
 
 import android.os.Bundle
 import android.util.Log
